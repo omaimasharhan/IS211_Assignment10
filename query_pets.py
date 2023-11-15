@@ -1,28 +1,37 @@
-import sqlite3
+import sqlite3 as lite
 
-conn = sqlite3.connect('pets.db')
-cursor = conn.cursor()
+con = lite.connect('pets.db')
 
-while True:
-    person_id = int(input("Enter a person's ID (or -1 to exit): ")
-    if person_id == -1:
-        break
+with con:
+    cur = con.cursor()
 
-    cursor.execute("SELECT first_name, last_name, age FROM person WHERE id = ?", (person_id,))
-    person_data = cursor.fetchone()
+    while True:
+        id_num = input("Enter ID NUMBER of pet owner, or enter -1 to exit: ")
 
-    if person_data:
-        print(f"{person_data[0]} {person_data[1]}, {person_data[2]} years old")
+        if id_num == '-1':
+            print('Exiting Database Query.')
+            raise SystemExit
 
-        cursor.execute("SELECT name, breed, age FROM pet WHERE id IN (SELECT pet_id FROM person_pet WHERE person_id = ?)", (person_id,))
-        pets_data = cursor.fetchall()
+        cur.execute("SELECT first_name, last_name, person.age, name, breed, pet.age, dead "
+                    "FROM person, pet, person_pet "
+                    "WHERE person.id = person_pet.person_id AND "
+                    "pet.id = person_pet.pet_id AND person.id = ?", (id_num,))
 
-        if pets_data:
-            for pet in pets_data:
-                print(f"Owned {pet[0]}, a {pet[1]}, that was {pet[2]} years old")
-        else:
-            print("This person has no pets.")
-    else:
-        print("Person not found.")
+        person = cur.fetchall()
 
-conn.close()
+.        if len(person) == 0:
+            print('Invalid ID number entered.')
+            continue
+
+        for row in person:
+            first_name, last_name, age, pet_name, pet_type, pet_age, living = row
+            if living == 1:
+                print('{} {}, age {}, owned a {} named {}, '
+                      'who was {} years old.'.format(first_name, last_name,
+                                                      age, pet_type,
+                                                      pet_name, pet_age))
+            else:
+                print('{} {}, age {}, owns a {} named {}, '
+                      'who is {} years old.'.format(first_name, last_name,
+                                                     age, pet_type,
+                                                     pet_name, pet_age))

@@ -1,22 +1,23 @@
+DROP TABLE IF EXISTS Artist;
+DROP TABLE IF EXISTS Albums;
+DROP TABLE IF EXISTS Songs;
 
-CREATE TABLE Artists (
-    artist_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL
+CREATE TABLE Artist (
+    artist_id INTEGER PRIMARY KEY,
+    artist TEXT NOT NULL
 );
 
 CREATE TABLE Albums (
-    album_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    artist_id INT,
-    FOREIGN KEY (artist_id) REFERENCES Artists(artist_id)
+    album_id INTEGER PRIMARY KEY,
+    artist_id INTEGER NOT NULL REFERENCES Artist(artist_id),
+    album_title TEXT NOT NULL
 );
 
 CREATE TABLE Songs (
-    song_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    album_id INT,
-    track_number INT NOT NULL,
-    duration_seconds INT NOT NULL,
-    FOREIGN KEY (album_id) REFERENCES Albums(album_id)
+    song_id INTEGER PRIMARY KEY,
+    song_title TEXT NOT NULL,
+    album_id INTEGER NOT NULL REFERENCES Albums(album_id),
+    artist_id INTEGER NOT NULL REFERENCES Artist(artist_id),
+    track_number INTEGER NOT NULL,
+    track_length TEXT
 );
-
